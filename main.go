@@ -18,7 +18,7 @@ const (
 	save    = "\033[s"
 	restore = "\033[u"
 
-	back = "\033[%dD"
+	back = "\033[%dD\033[1A"
 )
 
 func get_words() []string {
@@ -53,8 +53,7 @@ func main() {
 	raw_input := ""
 	reader := bufio.NewReader(os.Stdin)
 	i := 0
-	move_back := fmt.Sprintf(back, len(line))
-	fmt.Printf("%s%s%s%s%s", restore, gray, line, blue, move_back)
+	draw_with_border("", line, gray+line)
 	for i != len(line) {
 		key, _, err := reader.ReadRune()
 		if err != nil {
@@ -76,6 +75,8 @@ func main() {
 		}
 		print(raw_input, line)
 	}
+	// TODO: print stats
+	fmt.Print("\n\n")
 }
 
 func print(input string, line string) {
@@ -93,6 +94,11 @@ func print(input string, line string) {
 	output += gray
 	output += line[len(input):]
 
-	move_back := fmt.Sprintf(back, len(line)-len(input))
-	fmt.Printf("%s%s%s%s", restore, blue, output, move_back)
+	draw_with_border(input, line, output)
+}
+
+func draw_with_border(input string, line string, output string) {
+	move_back := fmt.Sprintf(back, len(line)-len(input)+2)
+	border := strings.Repeat("-", len(line)+2)
+	fmt.Printf("%s+%s+\n| %s%s |\n+%s+%s", restore, border, blue, output, border, move_back)
 }
