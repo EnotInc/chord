@@ -22,11 +22,7 @@ const (
 )
 
 func get_words() []string {
-	file, err := os.ReadFile("words.txt")
-	if err != nil {
-		return []string{}
-	}
-	all_words := strings.Split(string(file), " ")
+	all_words := strings.Split(words(), " ")
 	var words []string
 	for range 10 {
 		rnd := rand.IntN(1000)
