@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	blue = "\033[34m"
-	red  = "\033[31m"
-	gray = "\033[90m"
+	reset = "\033[0m"
+	blue  = "\033[34m"
+	red   = "\033[31m"
+	gray  = "\033[90m"
 
 	save    = "\033[s"
 	restore = "\033[u"
@@ -37,7 +38,6 @@ func is_key(key rune) bool {
 }
 
 func main() {
-
 	words := get_words()
 	line := strings.Join(words, " ")
 
@@ -60,6 +60,9 @@ func main() {
 			panic(err)
 		}
 
+		if key == '!' {
+			break
+		}
 		if !is_key(key) {
 			continue
 		}
@@ -97,8 +100,18 @@ func print(input string, line string) {
 	draw_with_border(input, line, output)
 }
 
+func build_border(message string, line_len int) string {
+	border := strings.Repeat("-", (line_len-len(message))/2)
+	shift_key := ""
+	if line_len%2 == 0 {
+		shift_key = "-"
+	}
+	return reset + "+" + border + " " + message + " " + border + shift_key + "+"
+}
+
 func draw_with_border(input string, line string, output string) {
 	move_back := fmt.Sprintf(back, len(line)-len(input)+2)
-	border := strings.Repeat("-", len(line)+2)
-	fmt.Printf("%s+%s+\n| %s%s |\n+%s+%s", restore, border, blue, output, border, move_back)
+	upper_border := build_border("[ chord ]", len(line))
+	lower_border := build_border("press <!> to quit", len(line))
+	fmt.Printf("%s %s\n %s| %s%s %s|\n %s%s", restore, upper_border, reset, blue, output, reset, lower_border, move_back)
 }
