@@ -53,5 +53,5 @@ func draw_with_border(input string, line string, output string) {
 	move_back := fmt.Sprintf(back, len(line)-len(input)+2)
 	upper_border := build_border(" chord ", len(line), upper)
 	lower_border := build_border(" press <"+string(quit_key)+"> to quit ", len(line), lower)
-	fmt.Printf("%s %s\n %s│ %s%s %s│\n %s%s", restore, upper_border, reset, blue, output, reset, lower_border, move_back)
+	fmt.Printf("%s %s\n\r %s│ %s%s %s│\n\r %s%s", restore, upper_border, reset, blue, output, reset, lower_border, move_back)
 }

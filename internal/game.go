@@ -70,5 +70,5 @@ func start_game_loop(line string) {
 		print(input, line)
 	}
 	// TODO: print stats
-	fmt.Print("\n\n")
+	fmt.Print("\n\r\n\r")
 }
