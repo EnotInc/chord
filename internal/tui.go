@@ -16,7 +16,7 @@ func print(input string, line string) {
 		if line[i] != byte(ch) {
 			output += red
 			if ch == ' ' {
-				ch = '_'
+				ch = '\u00b7'
 			}
 		}
 		output += string(ch)
@@ -50,7 +50,7 @@ func build_border(message string, line_len int, pos int) string {
 }
 
 func draw_with_border(input string, line string, output string) {
-	move_back := fmt.Sprintf(back, len(line)-len(input)+2)
+	move_back := fmt.Sprintf(back, len(line)-len(input)+2) + up
 	upper_border := build_border(" chord ", len(line), upper)
 	lower_border := build_border(" press <"+string(quit_key)+"> to quit ", len(line), lower)
 	fmt.Printf("%s %s\n\r %s│ %s%s %s│\n\r %s%s", restore, upper_border, reset, blue, output, reset, lower_border, move_back)

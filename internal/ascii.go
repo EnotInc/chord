@@ -1,6 +1,7 @@
 package internal
 
 const (
+	clear = "\033[0J"
 	reset = "\033[0m"
 	blue  = "\033[34m"
 	red   = "\033[31m"
@@ -9,7 +10,8 @@ const (
 	save    = "\033[s"
 	restore = "\033[u"
 
-	back = "\033[%dD\033[1A"
+	up   = "\033[1A"
+	back = "\033[%dD"
 
 	quit_key = '!'
 )
