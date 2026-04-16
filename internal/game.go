@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -25,9 +26,10 @@ type game struct {
 func getWords() []string {
 	all_words := strings.Split(words(), " ")
 	var words []string
-	for range 10 {
-		rnd := rand.IntN(1000)
+	for range 7 + rand.IntN(8) {
+		rnd := rand.IntN(len(all_words))
 		words = append(words, all_words[rnd])
+		all_words = slices.Delete(all_words, rnd, rnd+1)
 	}
 
 	return words
@@ -63,7 +65,6 @@ func Init() *game {
 		old:  old,
 		line: line,
 
-		time:   time.Now(),
 		typed:  0,
 		errors: 0,
 	}
@@ -74,16 +75,20 @@ func (g *game) Run() {
 	input := ""
 	reader := bufio.NewReader(os.Stdin)
 	i := 0
+	started := false
 	drawWithBorder("", g.line, gray+g.line)
 	for i != len(g.line) {
 		key, _, err := reader.ReadRune()
 		if err != nil {
 			panic(err)
 		}
-
 		if key == quit_key {
 			quit := red + "DNF" + reset
 			g.Exit(0, &quit)
+		}
+		if !started {
+			g.time = time.Now()
+			started = true
 		}
 		if !is_key(key) {
 			continue
@@ -110,6 +115,8 @@ func (g *game) Run() {
 
 func (g *game) getStats() *string {
 	t := time.Since(g.time).String()
-	stats := fmt.Sprintf("Ended in: "+cyan+"%s"+reset+"\nTyped "+blue+"%d"+reset+" symbols with "+red+"%d"+reset+" errors in total", t, g.typed, g.errors)
+	parts := strings.Split(t, ".")
+	result := fmt.Sprintf("%s.%ss", parts[0], parts[1][:2])
+	stats := fmt.Sprintf("Ended in: "+cyan+"%s"+reset+"\nTyped "+blue+"%d"+reset+" symbols with "+red+"%d"+reset+" errors in total", result, g.typed, g.errors)
 	return &stats
 }
