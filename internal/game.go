@@ -6,18 +6,23 @@ import (
 	"math/rand/v2"
 	"os"
 	"strings"
+	"time"
 
 	"golang.org/x/term"
 )
 
 type game struct {
+	time   time.Time
+	typed  int
+	errors int
+
 	fdin int
 	old  *term.State
 
 	line string
 }
 
-func get_words() []string {
+func getWords() []string {
 	all_words := strings.Split(words(), " ")
 	var words []string
 	for range 10 {
@@ -33,12 +38,16 @@ func is_key(key rune) bool {
 }
 
 func (g *game) Exit(code int, message *string) {
-	fmt.Print(restore, up, clear)
+	msg := ""
+	if message != nil {
+		msg = *message
+	}
+	fmt.Print(restore, up, clear, msg)
 	os.Exit(code)
 }
 
 func Init() *game {
-	words := get_words()
+	words := getWords()
 	line := strings.Join(words, " ")
 
 	fmt.Print(save)
@@ -49,12 +58,15 @@ func Init() *game {
 		panic(err)
 	}
 
-	g := game{}
-	g.fdin = fdin
-	g.old = old
-	g.line = line
-	// defer term.Restore(fdin, old)
-	// g.start_game_loop(line)
+	g := game{
+		fdin: fdin,
+		old:  old,
+		line: line,
+
+		time:   time.Now(),
+		typed:  0,
+		errors: 0,
+	}
 	return &g
 }
 
@@ -62,7 +74,7 @@ func (g *game) Run() {
 	input := ""
 	reader := bufio.NewReader(os.Stdin)
 	i := 0
-	draw_with_border("", g.line, gray+g.line)
+	drawWithBorder("", g.line, gray+g.line)
 	for i != len(g.line) {
 		key, _, err := reader.ReadRune()
 		if err != nil {
@@ -70,7 +82,8 @@ func (g *game) Run() {
 		}
 
 		if key == quit_key {
-			break
+			quit := red + "DNF" + reset
+			g.Exit(0, &quit)
 		}
 		if !is_key(key) {
 			continue
@@ -82,11 +95,21 @@ func (g *game) Run() {
 				input = input[:i]
 			}
 		} else {
+			g.typed += 1
+			if key != rune(g.line[i]) {
+				g.errors += 1
+			}
+
 			input += string(key)
 			i += 1
 		}
 		print(input, g.line)
 	}
-	// TODO: print stats
-	defer g.Exit(0, nil)
+	defer g.Exit(0, g.getStats())
+}
+
+func (g *game) getStats() *string {
+	t := time.Since(g.time).String()
+	stats := fmt.Sprintf("Ended in: "+cyan+"%s"+reset+"\nTyped "+blue+"%d"+reset+" symbols with "+red+"%d"+reset+" errors in total", t, g.typed, g.errors)
+	return &stats
 }

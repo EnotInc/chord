@@ -11,24 +11,24 @@ const (
 )
 
 func print(input string, line string) {
-	output := ""
+	var output strings.Builder
 	for i, ch := range input {
 		if line[i] != byte(ch) {
-			output += red
+			output.WriteString(red)
 			if ch == ' ' {
 				ch = '\u00b7'
 			}
 		}
-		output += string(ch)
-		output += blue
+		output.WriteString(string(ch))
+		output.WriteString(blue)
 	}
-	output += gray
-	output += line[len(input):]
+	output.WriteString(gray)
+	output.WriteString(line[len(input):])
 
-	draw_with_border(input, line, output)
+	drawWithBorder(input, line, output.String())
 }
 
-func build_border(message string, line_len int, pos int) string {
+func buildBorder(message string, line_len int, pos int) string {
 	border := strings.Repeat("─", (line_len-len(message))/2)
 	shift_border := ""
 	if line_len%2 == 0 {
@@ -49,9 +49,9 @@ func build_border(message string, line_len int, pos int) string {
 	return reset + l_corner + border + "─" + message + "─" + border + shift_border + r_corner
 }
 
-func draw_with_border(input string, line string, output string) {
+func drawWithBorder(input string, line string, output string) {
 	move_back := fmt.Sprintf(back, len(line)-len(input)+2) + up
-	upper_border := build_border(" chord ", len(line), upper)
-	lower_border := build_border(" press <"+string(quit_key)+"> to quit ", len(line), lower)
+	upper_border := buildBorder(" chord ", len(line), upper)
+	lower_border := buildBorder(" press <"+string(quit_key)+"> to quit ", len(line), lower)
 	fmt.Printf("%s %s\n\r %s│ %s%s %s│\n\r %s%s", restore, upper_border, reset, blue, output, reset, lower_border, move_back)
 }
