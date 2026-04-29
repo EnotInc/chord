@@ -112,11 +112,3 @@ func (g *game) Run() {
 	}
 	defer g.Exit(0, g.getStats())
 }
-
-func (g *game) getStats() *string {
-	t := time.Since(g.time).String()
-	parts := strings.Split(t, ".")
-	result := fmt.Sprintf("%s.%ss", parts[0], parts[1][:2])
-	stats := fmt.Sprintf("Ended in: "+cyan+"%s"+reset+"\nTyped "+blue+"%d"+reset+" symbols with "+red+"%d"+reset+" errors in total", result, g.typed, g.errors)
-	return &stats
-}

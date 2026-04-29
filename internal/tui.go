@@ -2,7 +2,9 @@ package internal
 
 import (
 	"fmt"
+	"math"
 	"strings"
+	"time"
 )
 
 const (
@@ -54,4 +56,15 @@ func drawWithBorder(input string, line string, output string) {
 	upper_border := buildBorder(" chord ", len(line), upper)
 	lower_border := buildBorder(" press <"+string(quit_key)+"> to quit ", len(line), lower)
 	fmt.Printf("%s %s\n\r %s│ %s%s %s│\n\r %s%s", restore, upper_border, reset, blue, output, reset, lower_border, move_back)
+}
+
+func (g *game) getStats() *string {
+	t := time.Since(g.time).Seconds()
+	round := math.Round(t*100) / 100
+
+	result := fmt.Sprintf("%.2f", round)
+	speed := fmt.Sprintf("%.2f", float64(g.typed)/round*60)
+
+	stats := fmt.Sprintf("Ended in: "+cyan+"%ss"+reset+"\nTyped "+blue+"%d"+reset+" symbols with "+red+"%d"+reset+" errors in total\nAverage speed: "+cyan+"%s CPM"+reset, result, g.typed, g.errors, speed)
+	return &stats
 }
